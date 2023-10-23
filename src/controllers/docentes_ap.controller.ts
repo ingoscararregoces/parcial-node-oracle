@@ -24,9 +24,8 @@ const createDocente = async ({ body }: Request, res: Response) => {
 const findDocentes = async (req: Request, res: Response) => {
   const connection = await ConenectionDb();
   try {
-    // const result = await connection.execute("SELECT * FROM docentes_ap");
-    // return res.status(200).send(result.rows);
-    return res.status(200).send({message: 'PRUEBA DE AMADOR'});
+    const result = await connection.execute("SELECT * FROM docentes_ap");
+    return res.status(200).send(result.rows);
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: "Error en consulta" });
