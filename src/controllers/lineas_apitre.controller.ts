@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import { ConenectionDb } from "../config/server";
 
-const createDocente = async ({ body }: Request, res: Response) => {
-  const { programa, sexo, profesion, estado, nombre } = body;
-  if (!programa || !sexo || !profesion || estado === null || !nombre)
+const createLinea = async ({ body }: Request, res: Response) => {
+  const { nombre, estado } = body;
+  if (estado === null || !nombre)
     return res.status(400).send({ error: "Todos los campos son requeridos" });
   const connection = await ConenectionDb();
   try {
     await connection.execute(
-      "INSERT INTO docentes_ap (nombre, programa, sexo, profesion, estado) VALUES ( :nombre, :programa, :sexo, :profesion, :estado)",
-      [nombre, programa, sexo, profesion, estado]
+      "INSERT INTO lineas_apitre (nombre, estado) VALUES ( :nombre, :estado)",
+      [nombre, estado]
     );
     await connection.commit();
 
@@ -21,10 +21,10 @@ const createDocente = async ({ body }: Request, res: Response) => {
     await connection.close();
   }
 };
-const findDocentes = async (req: Request, res: Response) => {
+const findLineas = async (req: Request, res: Response) => {
   const connection = await ConenectionDb();
   try {
-    const result = await connection.execute("SELECT * FROM docentes_ap");
+    const result = await connection.execute("SELECT * FROM lineas_apitre");
     return res.status(200).send(result.rows);
   } catch (error) {
     console.log(error);
@@ -33,12 +33,12 @@ const findDocentes = async (req: Request, res: Response) => {
     await connection.close();
   }
 };
-const findDocente = async ({ params }: Request, res: Response) => {
+const findLinea = async ({ params }: Request, res: Response) => {
   const connection = await ConenectionDb();
   const { id } = params;
   try {
     const result = await connection.execute(
-      "SELECT * FROM docentes_ap WHERE docentes_id = :id",
+      "SELECT * FROM lineas_apitre WHERE id = :id",
       [id]
     );
     return res
@@ -55,17 +55,17 @@ const findDocente = async ({ params }: Request, res: Response) => {
     await connection.close();
   }
 };
-const updateDocente = async ({ params, body }: Request, res: Response) => {
-  const { programa, sexo, profesion, estado, nombre } = body;
+const updateLinea = async ({ params, body }: Request, res: Response) => {
+  const { nombre, estado } = body;
   const { id } = params;
   if (!id) return res.status(400).send({ error: "Se requiere una ID" });
-  if (!programa || !sexo || !profesion || estado === null || !nombre)
+  if ( estado === null || !nombre)
     return res.status(400).send({ error: "Todos los campos son requeridos" });
   const connection = await ConenectionDb();
   try {
     const result = await connection.execute(
-      "UPDATE docentes_ap SET nombre = :nombre, programa = :programa, sexo = :sexo, profesion = :profesion, estado = :estado WHERE docentes_id = :id",
-      [nombre, programa, sexo, profesion, estado, id]
+      "UPDATE lineas_apitre SET nombre = :nombre, estado = :estado WHERE id = :id",
+      [nombre, estado, id]
     );
     await connection.commit();
     return res.status(200).send({ message: "Actualizado correctamente" });
@@ -76,11 +76,11 @@ const updateDocente = async ({ params, body }: Request, res: Response) => {
     await connection.close();
   }
 };
-const deleteDocente = async ({ params }: Request, res: Response) => {
+const deleteLinea = async ({ params }: Request, res: Response) => {
   const { id } = params;
   const connection = await ConenectionDb();
   try {
-    await connection.execute("DELETE docentes_ap WHERE docentes_id = :id", [
+    await connection.execute("DELETE lineas_apitre WHERE id = :id", [
       id,
     ]);
     await connection.commit();
@@ -92,10 +92,10 @@ const deleteDocente = async ({ params }: Request, res: Response) => {
     await connection.close();
   }
 };
-const deleteDocentes = async (req: Request, res: Response) => {
+const deleteLineas = async (req: Request, res: Response) => {
   const connection = await ConenectionDb();
   try {
-    await connection.execute("DELETE FROM docentes_ap");
+    await connection.execute("DELETE FROM lineas_apitre");
     await connection.commit();
     return res.status(200).send({ message: "Todos los registros fueron eliminados" });
   } catch (error) {
@@ -107,10 +107,10 @@ const deleteDocentes = async (req: Request, res: Response) => {
 };
 
 export {
-  createDocente,
-  findDocentes,
-  findDocente,
-  updateDocente,
-  deleteDocente,
-  deleteDocentes,
+  createLinea,
+  findLineas,
+  findLinea,
+  updateLinea,
+  deleteLinea,
+  deleteLineas,
 };
